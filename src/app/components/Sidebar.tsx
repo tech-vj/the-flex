@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname();
 
   return (
     <div className="flex">
@@ -20,9 +22,31 @@ const Sidebar = () => {
             <li className="mb-4">
               <Link
                 href="/dynamic-table"
-                className="block px-3 py-2 rounded-lg hover:bg-gray-700"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/dynamic-table" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
               >
                 Dynamic Table
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link
+                href="/test1"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/test1" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
+              >
+                Test 1
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link
+                href="/test2"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/test2" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
+              >
+                Test 2
               </Link>
             </li>
           </ul>

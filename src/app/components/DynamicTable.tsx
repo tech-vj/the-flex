@@ -30,6 +30,8 @@ const DynamicTable = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE", // Add if needed
           },
           body: JSON.stringify({
             conditions: [
@@ -51,13 +53,12 @@ const DynamicTable = () => {
 
         const jsonData = await response.json();
 
-        // Extract required data
         const formattedData = jsonData.map((item: any) => ({
-          record_label: item.feature_data.record_data[0]?.record_label || "N/A",
+          record_label: item.feature_data?.record_data[0]?.record_label || "N/A",
           record_value_text:
-            item.feature_data.record_data[0]?.record_value_text || "N/A",
-          Description: item.more_data.Description[0] || "N/A",
-          Price: item.more_data.Price[0] || "N/A",
+            item.feature_data?.record_data[0]?.record_value_text || "N/A",
+          Description: item.more_data?.Description?.[0] || "N/A",
+          Price: item.more_data?.Price?.[0] || "N/A",
         }));
 
         setData(formattedData);
@@ -89,7 +90,6 @@ const DynamicTable = () => {
 
   return (
     <div className="p-6 rounded-lg shadow bg-gray-800 text-white">
-      {/* Search Input */}
       <input
         type="text"
         placeholder="Search..."
@@ -97,8 +97,6 @@ const DynamicTable = () => {
         onChange={(e) => setGlobalFilter(e.target.value)}
         className="border p-2 rounded w-full mb-4 bg-gray-700 text-white border-gray-600"
       />
-
-      {/* Table */}
       <table className="w-full border-collapse border border-gray-600">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -123,8 +121,6 @@ const DynamicTable = () => {
           ))}
         </tbody>
       </table>
-
-      {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={() => table.previousPage()}
