@@ -1,18 +1,19 @@
 "use client";
-import React, { useState, useEffect } from "react";
 
-const Test = () => {
-  const [apiResponse, setApiResponse] = useState(null);
-  const [error, setError] = useState(null);
+import { useEffect, useState } from "react";
+
+export default function Test1Page() {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://183.82.7.208:3002/anyapp/search/", {
+        const response = await fetch("/api/proxy", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json", // Ensures proper JSON response
           },
           body: JSON.stringify({
             conditions: [
@@ -27,32 +28,38 @@ const Test = () => {
             app_secret: "38475203487kwsdjfvb1023897yfwbhekrfj",
           }),
         });
-    
+
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+          throw new Error("Failed to fetch data");
         }
-    
-        const jsonData = await response.json();
-        console.log("API Response:", jsonData);
-        setApiResponse(jsonData);
+
+        const result = await response.json();
+        setData(result);
       } catch (err: any) {
-        console.error("Fetch Error:", err);
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    };    
+    };
 
     fetchData();
   }, []);
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
-    <div className="p-6 rounded-lg shadow bg-gray-800 text-white">
-      <h1 className="text-xl font-bold mb-4">Test API Fetch</h1>
-      {error && <p className="text-red-500">Error: {error}</p>}
-      <pre className="bg-gray-900 p-4 rounded-lg overflow-auto text-sm">
-        {apiResponse ? JSON.stringify(apiResponse, null, 2) : "Loading..."}
-      </pre>
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Product List</h1>
+      <ul className="space-y-4">
+        {data.map((item) => (
+          <li key={item.record_id} className="border p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold">{item.feature_data.record_data[0].record_value_text}</h2>
+            <p>{item.more_data.Description[0]}</p>
+            <p className="text-gray-600">Price: {item.more_data.Price[0]}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-};
-
-export default Test;
+}
