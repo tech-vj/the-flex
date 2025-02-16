@@ -10,14 +10,13 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-type Data = {
+// Define data type
+interface Data {
   record_label: string;
   record_value_text: string;
   Description: string;
   Price: string;
-};
-
-const API_URL = "http://183.82.7.208:3002/anyapp/search/";
+}
 
 const DynamicTable = () => {
   const [data, setData] = useState<Data[]>([]);
@@ -26,12 +25,11 @@ const DynamicTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(API_URL, {
+        const response = await fetch("/api/proxy", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE", // Add if needed
           },
           body: JSON.stringify({
             conditions: [
@@ -53,10 +51,12 @@ const DynamicTable = () => {
 
         const jsonData = await response.json();
 
-        const formattedData = jsonData.map((item: any) => ({
-          record_label: item.feature_data?.record_data[0]?.record_label || "N/A",
-          record_value_text:
-            item.feature_data?.record_data[0]?.record_value_text || "N/A",
+        const formattedData = jsonData.map((item: {
+          feature_data?: { record_data?: { record_label?: string; record_value_text?: string }[] };
+          more_data?: { Description?: string[]; Price?: string[] };
+        }) => ({
+          record_label: item.feature_data?.record_data?.[0]?.record_label || "N/A",
+          record_value_text: item.feature_data?.record_data?.[0]?.record_value_text || "N/A",
           Description: item.more_data?.Description?.[0] || "N/A",
           Price: item.more_data?.Price?.[0] || "N/A",
         }));
@@ -70,7 +70,7 @@ const DynamicTable = () => {
     fetchData();
   }, []);
 
-  const columns: ColumnDef<Data>[] = [
+  const columns: ColumnDef<Data, unknown>[] = [
     { accessorKey: "record_label", header: "Record Label" },
     { accessorKey: "record_value_text", header: "Record Value" },
     { accessorKey: "Description", header: "Description" },
