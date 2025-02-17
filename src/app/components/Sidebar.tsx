@@ -49,6 +49,16 @@ const Sidebar = () => {
                 Test 2
               </Link>
             </li>
+            <li className="mb-4">
+              <Link
+                href="/ManageData"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/ManageData" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
+              >
+                Manage Data
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

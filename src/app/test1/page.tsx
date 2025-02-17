@@ -14,6 +14,7 @@ const Test1 = () => {
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "X-API-TYPE": "search"
           },
           body: JSON.stringify({
             conditions: [
@@ -47,7 +48,7 @@ const Test1 = () => {
 
   return (
     <div className="p-6 rounded-lg shadow bg-gray-800 text-white">
-      <h2 className="text-xl font-bold mb-4">Raw JSON Response</h2>
+      <h2 className="text-xl font-bold mb-4">Raw JSON Response - POST Method</h2>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (

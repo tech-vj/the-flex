@@ -12,6 +12,7 @@ const Test2Feature = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "X-API-TYPE": "search"
           },
           body: JSON.stringify({
             conditions: [
@@ -40,7 +41,7 @@ const Test2Feature = () => {
 
   return (
     <div className="p-6 rounded-lg shadow bg-gray-800 text-white">
-      <h1 className="text-2xl font-bold mb-4">Test Page 2 - GET Method</h1>
+      <h1 className="text-2xl font-bold mb-4">Test Page 2 - POST Method</h1>
       {data ? (
         <pre className="bg-gray-700 text-white p-4 rounded-md overflow-auto border border-gray-600">
           {JSON.stringify(data, null, 2)}

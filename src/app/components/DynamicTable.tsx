@@ -30,6 +30,7 @@ const DynamicTable = () => {
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "X-API-TYPE": "search"
           },
           body: JSON.stringify({
             conditions: [
@@ -40,6 +41,8 @@ const DynamicTable = () => {
               },
             ],
             combination_type: "and",
+            "page": 1,
+            "limit": 100,
             dataset: "feature_data",
             app_secret: "38475203487kwsdjfvb1023897yfwbhekrfj",
           }),
