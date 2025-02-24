@@ -1,12 +1,58 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [menuItems, setMenuItems] = useState<{ name: string; route: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/proxy", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-TYPE": "search",
+          },
+          body: JSON.stringify({
+            conditions: [
+              {
+                field: "feature_name",
+                value: "app1_menu",
+                search_type: "exact",
+              },
+            ],
+            combination_type: "and",
+            page: 1,
+            limit: 100,
+            dataset: "feature_data",
+            app_secret: "38475203487kwsdjfvb1023897yfwbhekrfj",
+          }),
+        });
+
+        const result = await response.json();
+        if (response.ok && result.data.length > 0) {
+          const menuData = result.data[0].more_data?.config || [];
+          setMenuItems(menuData);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error("Error fetching menu:", err);
+        setError(true);
+      }
+      setLoading(false);
+    };
+
+    fetchMenu();
+  }, []);
 
   return (
     <div className="flex">
@@ -17,70 +63,29 @@ const Sidebar = () => {
         } md:block`}
       >
         <h1 className="text-xl font-bold mb-6">My Dashboard</h1>
-        <nav>
-          <ul>
-            <li className="mb-4">
-              <Link
-                href="/dynamic-table"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/dynamic-table" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                Dynamic Table
-              </Link>
-            </li>
-            <li className="mb-4">
-              <Link
-                href="/test1"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/test1" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                Test 1
-              </Link>
-            </li>
-            <li className="mb-4">
-              <Link
-                href="/test2"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/test2" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                Test 2
-              </Link>
-            </li>
-            <li className="mb-4">
-              <Link
-                href="/ManageData"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/ManageData" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                Manage Data
-              </Link>
-            </li>
-            <li className="mb-4">
-              <Link
-                href="/DynamicTableView"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/DynamicTableView" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                DynamicTableView
-              </Link>
-            </li>
-            <li className="mb-4">
-              <Link
-                href="/DynamicForm"
-                className={`block px-3 py-2 rounded-lg ${
-                  pathname === "/DynamicForm" ? "bg-gray-700" : "hover:bg-gray-700"
-                }`}
-              >
-                DynamicForm
-              </Link>
-            </li>
-          </ul>
-        </nav>
+
+        {loading ? (
+          <p className="text-gray-400">Loading menu...</p>
+        ) : error ? (
+          <p className="text-red-500">Failed to load menu.</p>
+        ) : (
+          <nav>
+            <ul>
+              {menuItems.map((item, index) => (
+                <li key={index} className="mb-4">
+                  <Link
+                    href={item.route}
+                    className={`block px-3 py-2 rounded-lg ${
+                      pathname === item.route ? "bg-gray-700" : "hover:bg-gray-700"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </div>
 
       {/* Sidebar Toggle Button */}
