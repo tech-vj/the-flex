@@ -59,6 +59,26 @@ const Sidebar = () => {
                 Manage Data
               </Link>
             </li>
+            <li className="mb-4">
+              <Link
+                href="/DynamicTableView"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/DynamicTableView" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
+              >
+                DynamicTableView
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link
+                href="/DynamicForm"
+                className={`block px-3 py-2 rounded-lg ${
+                  pathname === "/DynamicForm" ? "bg-gray-700" : "hover:bg-gray-700"
+                }`}
+              >
+                DynamicForm
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

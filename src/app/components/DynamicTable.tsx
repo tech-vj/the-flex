@@ -12,10 +12,12 @@ import {
 
 // Define data type
 interface Data {
-  record_label: string;
-  record_value_text: string;
-  Description: string;
-  Price: string;
+  record_id: string;
+  product_name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+  created_on_date: string;
 }
 
 const DynamicTable = () => {
@@ -36,7 +38,7 @@ const DynamicTable = () => {
             conditions: [
               {
                 field: "feature_name",
-                value: "Products",
+                value: "Test_Products",
                 search_type: "exact",
               },
             ],
@@ -54,14 +56,25 @@ const DynamicTable = () => {
 
         const jsonData = await response.json();
 
-        const formattedData = jsonData.map((item: {
-          feature_data?: { record_data?: { record_label?: string; record_value_text?: string }[] };
-          more_data?: { Description?: string[]; Price?: string[] };
-        }) => ({
-          record_label: item.feature_data?.record_data?.[0]?.record_label || "N/A",
-          record_value_text: item.feature_data?.record_data?.[0]?.record_value_text || "N/A",
-          Description: item.more_data?.Description?.[0] || "N/A",
-          Price: item.more_data?.Price?.[0] || "N/A",
+        const formattedData = jsonData.data.map((item: any) => ({
+          record_id: item.record_id,
+          product_name:
+            item.feature_data?.record_data?.find(
+              (d: any) => d.record_label === "Product Name"
+            )?.record_value_text || "N/A",
+          description:
+            item.feature_data?.record_data?.find(
+              (d: any) => d.record_label === "Description"
+            )?.record_value_text || "N/A",
+          price:
+            item.feature_data?.record_data?.find(
+              (d: any) => d.record_label === "Price"
+            )?.record_value_number || 0,
+          stock_quantity:
+            item.feature_data?.record_data?.find(
+              (d: any) => d.record_label === "Stock Quantity"
+            )?.record_value_number || 0,
+          created_on_date: item.created_on_date,
         }));
 
         setData(formattedData);
@@ -74,10 +87,12 @@ const DynamicTable = () => {
   }, []);
 
   const columns: ColumnDef<Data, unknown>[] = [
-    { accessorKey: "record_label", header: "Record Label" },
-    { accessorKey: "record_value_text", header: "Record Value" },
-    { accessorKey: "Description", header: "Description" },
-    { accessorKey: "Price", header: "Price" },
+    { accessorKey: "record_id", header: "Record ID" },
+    { accessorKey: "product_name", header: "Product Name" },
+    { accessorKey: "description", header: "Description" },
+    { accessorKey: "price", header: "Price" },
+    { accessorKey: "stock_quantity", header: "Stock Quantity" },
+    { accessorKey: "created_on_date", header: "Created On" },
   ];
 
   const table = useReactTable({
@@ -92,7 +107,7 @@ const DynamicTable = () => {
   });
 
   return (
-    <div className="p-6 rounded-lg shadow bg-gray-800 text-white">
+    <div className="p-6 rounded-lg shadow bg-gray-800 text-white text-center">
       <input
         type="text"
         placeholder="Search..."
