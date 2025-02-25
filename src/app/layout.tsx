@@ -25,6 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script defer src="https://cdn.tailwindcss.com"></script>
+        <script defer src="https://c20.live/script/chatbot-embed.js"></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-500`}
       >
@@ -32,6 +36,25 @@ export default function RootLayout({
           <Sidebar />
           <main className="flex-1 p-6">{children}</main>
         </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('DOMContentLoaded', function() {
+                if (window.initializeChatbot) {
+                  window.initializeChatbot("67bda90867e91892a15520ed");
+                  return;
+                }
+                const checkInitialize = setInterval(function() {
+                  if (window.initializeChatbot) {
+                    window.initializeChatbot("67bda90867e91892a15520ed");
+                    clearInterval(checkInitialize);
+                  }
+                }, 100);
+                setTimeout(() => clearInterval(checkInitialize), 10000);
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );
