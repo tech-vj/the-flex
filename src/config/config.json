@@ -1,0 +1,12 @@
+{
+    "conditions": [
+      {
+        "field": "feature_name",
+        "value": "Products",
+        "search_type": "exact"
+      }
+    ],
+    "page": 1,
+    "limit": 5
+  }
+  

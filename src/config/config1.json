@@ -1,0 +1,18 @@
+{
+  "conditions": [
+    {
+      "field": "feature_name",
+      "value": "Test_Products",
+      "search_type": "exact"
+    }
+  ],
+  "page": 1,
+  "limit": 5,
+  "dataset": "feature_data",
+  "app_secret": "38475203487kwsdjfvb1023897yfwbhekrfj",
+  "features": {
+    "search": true,
+    "sorting": true,
+    "pagination": true
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "conditions": [
+    {
+      "field": "feature_name",
+      "value": "Products",
+      "search_type": "exact"
+    }
+  ],
+  "page": 1,
+  "limit": 10,
+  "dataset": "feature_data",
+  "app_secret": "38475203487kwsdjfvb1023897yfwbhekrfj",
+  "features": {
+    "search": false,
+    "sorting": true,
+    "pagination": true
+  }
+}
