@@ -1,0 +1,43 @@
+{
+    "page1": {
+      "title": "Page 1 - Product List",
+      "dataset": "feature_data",
+      "component": "DynamicTable",
+      "conditions": [
+        {
+          "field": "feature_name",
+          "value": "Test_Products",
+          "search_type": "exact"
+        }
+      ],
+      "page": 1,
+      "limit": 5,
+      "app_secret": "38475203487kwsdjfvb1023897yfwbhekrfj",
+      "features": {
+        "search": true,
+        "sorting": false,
+        "pagination": false
+      }
+    },
+    "page2": {
+      "title": "Page 2 - Inventory List",
+      "dataset": "feature_data",
+      "component": "DynamicTable",
+      "conditions": [
+        {
+          "field": "feature_name",
+          "value": "Products",
+          "search_type": "exact"
+        }
+      ],
+      "page": 1,
+      "limit": 10,
+      "app_secret": "38475203487kwsdjfvb1023897yfwbhekrfj",
+      "features": {
+        "search": true,
+        "sorting": true,
+        "pagination": true
+      }
+    }
+  }
+  
