@@ -1,8 +1,19 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+// Helper function to decode Base64
+const decodeBase64 = (encodedData: string) => {
+  try {
+    return JSON.parse(atob(encodedData));
+  } catch (error) {
+    console.error("Error decoding Base64:", error);
+    return [];
+  }
+};
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -29,9 +40,6 @@ const Sidebar = () => {
                 search_type: "exact",
               },
             ],
-            combination_type: "and",
-            page: 1,
-            limit: 100,
             dataset: "feature_data",
             app_secret: "38475203487kwsdjfvb1023897yfwbhekrfj",
           }),
@@ -39,8 +47,9 @@ const Sidebar = () => {
 
         const result = await response.json();
         if (response.ok && result.data.length > 0) {
-          const menuData = result.data[0].more_data?.config || [];
-          setMenuItems(menuData);
+          const base64Config = result.data[0]?.more_data?.menu_config?.[0] || "";
+          const decodedMenu = base64Config ? decodeBase64(base64Config) : [];
+          setMenuItems(decodedMenu);
         } else {
           setError(true);
         }
@@ -57,11 +66,7 @@ const Sidebar = () => {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div
-        className={`bg-gray-900 text-white w-64 min-h-screen p-5 transition-all ${
-          isOpen ? "block" : "hidden"
-        } md:block`}
-      >
+      <div className={`bg-gray-900 text-white w-64 min-h-screen p-5 transition-all ${isOpen ? "block" : "hidden"} md:block`}>
         <h1 className="text-xl font-bold mb-6">My Dashboard</h1>
 
         {loading ? (
@@ -75,9 +80,7 @@ const Sidebar = () => {
                 <li key={index} className="mb-4">
                   <Link
                     href={item.route}
-                    className={`block px-3 py-2 rounded-lg ${
-                      pathname === item.route ? "bg-gray-700" : "hover:bg-gray-700"
-                    }`}
+                    className={`block px-3 py-2 rounded-lg ${pathname === item.route ? "bg-gray-700" : "hover:bg-gray-700"}`}
                   >
                     {item.name}
                   </Link>
@@ -89,10 +92,7 @@ const Sidebar = () => {
       </div>
 
       {/* Sidebar Toggle Button */}
-      <button
-        className="absolute top-4 left-4 text-white bg-gray-800 p-2 rounded-md md:hidden"
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <button className="absolute top-4 left-4 text-white bg-gray-800 p-2 rounded-md md:hidden" onClick={() => setIsOpen(!isOpen)}>
         <Bars3Icon className="w-6 h-6" />
       </button>
     </div>

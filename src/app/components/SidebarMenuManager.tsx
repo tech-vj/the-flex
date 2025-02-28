@@ -1,9 +1,25 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Helper function to encode data to Base64
+const encodeBase64 = (data: any) => btoa(JSON.stringify(data));
+
+// Helper function to decode Base64
+const decodeBase64 = (encodedData: string) => {
+  try {
+    return JSON.parse(atob(encodedData));
+  } catch (error) {
+    console.error("Error decoding Base64:", error);
+    return [];
+  }
+};
 
 const SidebarMenuManager = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [menuItems, setMenuItems] = useState<{ name: string; route: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -21,16 +37,7 @@ const SidebarMenuManager = () => {
             "X-API-TYPE": "search",
           },
           body: JSON.stringify({
-            conditions: [
-              {
-                field: "feature_name",
-                value: "app1_menu",
-                search_type: "exact",
-              },
-            ],
-            combination_type: "and",
-            page: 1,
-            limit: 100,
+            conditions: [{ field: "feature_name", value: "app1_menu", search_type: "exact" }],
             dataset: "feature_data",
             app_secret: "38475203487kwsdjfvb1023897yfwbhekrfj",
           }),
@@ -38,8 +45,9 @@ const SidebarMenuManager = () => {
 
         const result = await response.json();
         if (response.ok && result.data.length > 0) {
-          const fetchedMenu = result.data[0].more_data?.config || [];
-          setMenuItems(fetchedMenu);
+          const base64Config = result.data[0]?.more_data?.menu_config?.[0] || "";
+          const decodedMenu = base64Config ? decodeBase64(base64Config) : [];
+          setMenuItems(decodedMenu);
         } else {
           setError(true);
         }
@@ -70,10 +78,12 @@ const SidebarMenuManager = () => {
     setMenuItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update menu
+  // Update menu with API and show toast notifications
   const updateMenu = async () => {
     setUpdating(true);
     try {
+      const encodedConfig = encodeBase64(menuItems);
+
       const response = await fetch("/api/proxy", {
         method: "POST",
         headers: {
@@ -82,13 +92,12 @@ const SidebarMenuManager = () => {
         },
         body: JSON.stringify({
           data: {
-            record_id: "app1_menu_001",
+            record_id: "app1_menu",
             feature_name: "app1_menu",
             fields_to_update: {
               more_data: {
-                config: menuItems,
+                menu_config: [encodedConfig], // Store as Base64
               },
-              record_status: "active",
             },
           },
           dataset: "feature_data",
@@ -98,23 +107,24 @@ const SidebarMenuManager = () => {
 
       const result = await response.json();
       if (response.ok) {
-        alert("Sidebar menu updated successfully!");
+        toast.success(result.message || "Sidebar menu updated successfully!");
         router.push("/MenuManager");
         setTimeout(() => {
-            window.location.reload();
-          }, 500);
+          window.location.reload();
+        }, 500);
       } else {
-        alert("Failed to update sidebar menu.");
+        toast.error(result.message || "Failed to update sidebar menu.");
       }
     } catch (err) {
       console.error("Error updating menu:", err);
-      alert("An error occurred while updating the menu.");
+      toast.error("An error occurred while updating the menu.");
     }
     setUpdating(false);
   };
 
   return (
     <div className="p-6 bg-gray-800 text-white rounded-lg">
+      <ToastContainer />
       <h2 className="text-xl font-bold mb-4">Sidebar Menu Manager</h2>
 
       {loading ? (
@@ -163,15 +173,10 @@ const SidebarMenuManager = () => {
             </tbody>
           </table>
 
-          <button
-            onClick={addMenuItem}
-            className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 mb-4"
-          >
+          <button onClick={addMenuItem} className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 mb-4">
             + Add Menu Item
           </button>
-
           <br />
-
           <button
             onClick={updateMenu}
             disabled={updating}
